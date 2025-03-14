@@ -1,0 +1,25 @@
+services:
+  php:
+    image: php:apache
+    container_name: webrss-php
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - 8080:80
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:alpine
+    container_name: webrss-postgres
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - webrss_data:/var/lib/postgres/data
+      - ./init:/docker-entrypoint-initdb.d
+    restart: always
+
+volumes:
+  webrss_data:
