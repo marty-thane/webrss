@@ -1,6 +1,6 @@
 services:
   php:
-    image: php:apache
+    build: .
     container_name: webrss-php
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
