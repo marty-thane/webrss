@@ -33,16 +33,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="/w3.css"> 
   <title>Log in - <?= $app; ?></title>
 </head>
 <body>
-  <h2>Log into <?= $app; ?></h2>
-  <form id="login-form" method="POST">
-    <input type="text" id="username" name="username" placeholder="Username" required><br>
-    <input type="password" id="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Log in</button>
-  </form>
-  <p>Don't have an account? <a href="/register" >Register here</a></p>
+  <div class="w3-panel w3-card w3-display-topmiddle" style="width:360px;">
+    <h2>Log into <?= $app; ?></h2>
+    <form id="login-form" method="POST">
+      <input class="w3-input" type="text" id="username" name="username" placeholder="Username" required><br>
+      <input class="w3-input" type="password" id="password" name="password" placeholder="Password" required><br>
+      <button class="w3-button w3-teal w3-block" type="submit">Log in</button>
+    </form>
+    <p>Don't have an account? <a href="/register" >Register here</a></p>
+  </div>
 </body>
 </html>

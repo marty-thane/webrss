@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute(['username' => $username, 'password' => $hashedPassword]);
     echo '<script>
     alert("Registration successful! You will now be redirected.");
-    window.location.href = "/login"; // Redirect to login page after success
+    window.location.href = "/login";
   </script>';
   }
 }
@@ -36,17 +36,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="/w3.css"> 
   <title>Register - <?= $app; ?></title>
 </head>
 <body>
-  <h2>Create an account</h2>
-  <form id="register-form" method="POST">
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Register</button>
-  </form>
-  <p>Have an account? <a href="/login">Login here</a></p>
+  <div class="w3-panel w3-card w3-display-topmiddle" style="width:360px;">
+    <h2>Create an account</h2>
+    <form id="register-form" method="POST">
+      <input class="w3-input" type="text" name="username" placeholder="Username" required><br>
+      <input class="w3-input" type="password" name="password" placeholder="Password" required><br>
+      <button class="w3-button w3-teal w3-block" type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="/login">Login here</a></p>
+  </div>
 </body>
 </html>
-

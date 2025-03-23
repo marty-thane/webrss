@@ -7,16 +7,6 @@ if (!isset($_SESSION['id'])) {
   exit();
 }
 
-# Query the user's subscribed feeds
-$stmt = $pdo->prepare('
-  SELECT f.id, f.url 
-  FROM Feeds f
-  JOIN UsersFeeds uf ON uf.feed_id = f.id
-  WHERE uf.user_id = :user_id
-');
-$stmt->execute(['user_id' => $_SESSION['id']]);
-$feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 # Function for validating submitted RSS files
 function validateRSS($url, $xsdFile) {
   $dom = new DOMDocument;
@@ -34,7 +24,7 @@ function validateRSS($url, $xsdFile) {
 
 # If trying to subscribe
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $url = $_POST['url'];
+  $url = htmlspecialchars($_POST['url']);
   
   if (validateRSS($url, 'rss.xsd')) {
     $stmt = $pdo->prepare('SELECT id FROM Feeds WHERE url = :url');
@@ -55,6 +45,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo '<script>alert("Invalid RSS feed or failed validation!");</script>';
   }
 }
+
+# Query the user's subscribed feeds
+$stmt = $pdo->prepare('
+  SELECT f.id, f.url 
+  FROM Feeds f
+  JOIN UsersFeeds uf ON uf.feed_id = f.id
+  WHERE uf.user_id = :user_id
+');
+$stmt->execute(['user_id' => $_SESSION['id']]);
+$feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -62,55 +62,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="/w3.css"> 
   <title>Home - <?= $app; ?></title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     function fetchFeed(url) {
-      // Show the loading indicator
+      $('#welcome').hide();
+      $('#feed').hide();
       $('#loading-indicator').show();
-
       $.ajax({
-        url: 'feed.php', // PHP file that will return the RSS feed data
+        url: 'feed.php',
         method: 'GET',
         data: { url: url },
         success: function(response) {
-          // Hide the loading indicator and display the feed
           $('#loading-indicator').hide();
-          $('#rss-feed').html(response); // Insert the transformed HTML
+          $('#feed').show();
+          $('#feed').html(response);
         },
         error: function() {
-          // Hide the loading indicator and show an error message
           $('#loading-indicator').hide();
           alert("Error fetching feed!");
         }
       });
     }
   </script>
+  <style>
+    #loading-indicator {
+      border: 3px solid #000;
+      border-top: 3px solid #FFF;
+      border-radius: 100%;
+      width: 39px;
+      height: 39px;
+      animation: spin 1.5s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello, <?= $_SESSION['username']; ?>!</h1>
-  <p>See what's going on in the world.</p>
-  
-  <h3>Your Subscribed Feeds:</h3>
-  <ul>
-    <?php foreach ($feeds as $feed): ?>
-      <li><a href="javascript:void(0);" onclick="fetchFeed('<?= htmlspecialchars($feed['url']); ?>')"><?= htmlspecialchars($feed['url']); ?></a></li>
-    <?php endforeach; ?>
-  </ul>
+  <div class="w3-flex">
+    <div class="w3-panel" style="width:320px;">
+      <form class="w3-flex" id="login-form" method="POST">
+          <input class="w3-input" type="text" id="url" name="url" placeholder="Enter feed URL..." required><br>
+        <button class="w3-button w3-teal" type="submit">Add</button>
+      </form>
+      <ul class="w3-ul w3-hoverable">
+        <?php foreach ($feeds as $feed): ?>
+          <li onclick="fetchFeed('<?= $feed['url']; ?>')"><?= $feed['url']; ?></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
 
-  <div id="loading-indicator" style="display: none;">
-    <p>Loading RSS feed...</p>
-    <img src="https://cdnjs.cloudflare.com/ajax/libs/jquery-loading/1.1.0/loading.svg" alt="Loading" />
+    <div class="w3-container" style="width:850px;">
+      <div id="welcome">
+        <h1>Welcome, <?= $_SESSION['username']; ?>!</h1>
+        <p>
+          You can click on the links on the left to view the feeds you're subscribed to.
+          If you don't have any subscriptions yet, simply use the input field in the
+          upper left corner to subscribe to your favorite feeds.
+        </p>
+        <p>
+          If you encounter any issues, feel free to open an issue on our
+          <a href="https://github.com/marty-thane/webrss/issues" target="_blank">GitHub page</a>.
+        </p>
+      </div>
+
+      <span class="w3-panel w3-display-topmiddle" id="loading-indicator" style="display: none;"></span>
+
+      <div id="feed"></div>
+    </div>
   </div>
-
-  <div id="rss-feed">
-    <!-- RSS feed content will be displayed here -->
-  </div>
-
-  <form id="login-form" method="POST">
-    <input type="text" id="url" name="url" placeholder="Link" required><br>
-    <button type="submit">Add</button>
-  </form>
 </body>
 </html>
