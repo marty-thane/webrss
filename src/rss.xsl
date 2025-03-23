@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  
-  <!-- Template to match the root element (RSS feed) -->
   <xsl:template match="/rss">
-    <html>
-      <head>
-        <title>RSS Feed</title>
-      </head>
-      <body>
-        <h2>RSS Feed</h2>
-        <ul>
-          <!-- Loop through each RSS item -->
-          <xsl:for-each select="channel/item">
+    <h1>
+      <xsl:value-of select="channel/title" />
+    </h1>
+    <xsl:for-each select="channel/item">
+      <div class="w3-card w3-panel">
+        <h3>
+          <xsl:value-of select="title" />
+        </h3>
+        <p class="w3-text-gray">
+          <xsl:value-of select="pubDate" />
+        </p>
+        <p>
+          <xsl:value-of select="description" />
+        </p>
+        <p>Links:</p>
+        <ol>
+          <xsl:for-each select="link">
             <li>
-              <a href="{link}">
-                <xsl:value-of select="title" />
+              <a href="{.}">
+                <xsl:value-of select="." />
               </a>
             </li>
           </xsl:for-each>
-        </ul>
-      </body>
-    </html>
+        </ol>
+      </div>
+    </xsl:for-each>
   </xsl:template>
-  
 </xsl:stylesheet>
