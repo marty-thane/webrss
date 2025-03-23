@@ -1,5 +1,5 @@
 <?php
-require('../common.php');
+require('common.php');
 
 # Redirect if already logged in
 if (isset($_SESSION['id'])) {
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute(['username' => $username, 'password' => $hashedPassword]);
     echo '<script>
     alert("Registration successful! You will now be redirected.");
-    window.location.href = "/login";
+    window.location.href = "/login.php";
   </script>';
   }
 }
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/w3.css"> 
+  <link rel="stylesheet" href="/static/w3.css"> 
   <title>Register - <?= $app; ?></title>
 </head>
 <body>
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <input class="w3-input" type="password" name="password" placeholder="Password" required><br>
       <button class="w3-button w3-teal w3-block" type="submit">Register</button>
     </form>
-    <p>Already have an account? <a href="/login">Login here</a></p>
+    <p>Already have an account? <a href="/login.php">Login here</a></p>
   </div>
 </body>
 </html>

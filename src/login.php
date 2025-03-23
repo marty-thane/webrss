@@ -1,5 +1,5 @@
 <?php
-require('../common.php');
+require('common.php');
 
 # Redirect if already logged in
 if (isset($_SESSION['id'])) {
@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/w3.css"> 
+  <link rel="stylesheet" href="/static/w3.css"> 
   <title>Log in - <?= $app; ?></title>
 </head>
 <body>
@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <input class="w3-input" type="password" id="password" name="password" placeholder="Password" required><br>
       <button class="w3-button w3-teal w3-block" type="submit">Log in</button>
     </form>
-    <p>Don't have an account? <a href="/register" >Register here</a></p>
+    <p>Don't have an account? <a href="/register.php" >Register here</a></p>
   </div>
 </body>
 </html>

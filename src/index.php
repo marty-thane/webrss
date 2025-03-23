@@ -3,47 +3,28 @@ require('common.php');
 
 # Redirect if not logged in
 if (!isset($_SESSION['id'])) {
-  header('Location: /login');
+  header('Location: /login.php');
   exit();
-}
-
-# Function for validating submitted RSS files
-function validateRSS($url, $xsdFile) {
-  $dom = new DOMDocument;
-  libxml_use_internal_errors(true);
-  if ($dom->load($url)) {
-    if ($dom->schemaValidate($xsdFile)) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
 }
 
 # If trying to subscribe
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $url = htmlspecialchars($_POST['url']);
   
-  if (validateRSS($url, 'rss.xsd')) {
-    $stmt = $pdo->prepare('SELECT id FROM Feeds WHERE url = :url');
+  $stmt = $pdo->prepare('SELECT id FROM Feeds WHERE url = :url');
+  $stmt->execute(['url' => $url]);
+  $feed = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!$feed) {
+    $stmt = $pdo->prepare('INSERT INTO Feeds (url) VALUES (:url) RETURNING id');
     $stmt->execute(['url' => $url]);
-    $feed = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$feed) {
-      $stmt = $pdo->prepare('INSERT INTO Feeds (url) VALUES (:url) RETURNING id');
-      $stmt->execute(['url' => $url]);
-      $feedId = $stmt->fetchColumn();
-    } else {
-      $feedId = $feed['id'];
-    }
-
-    $stmt = $pdo->prepare('INSERT INTO UsersFeeds (user_id, feed_id) VALUES (:user_id, :feed_id)');
-    $stmt->execute(['user_id' => $_SESSION['id'], 'feed_id' => $feedId]);
+    $feedId = $stmt->fetchColumn();
   } else {
-    echo '<script>alert("Invalid RSS feed or failed validation!");</script>';
+    $feedId = $feed['id'];
   }
+
+  $stmt = $pdo->prepare('INSERT INTO UsersFeeds (user_id, feed_id) VALUES (:user_id, :feed_id)');
+  $stmt->execute(['user_id' => $_SESSION['id'], 'feed_id' => $feedId]);
 }
 
 # Query the user's subscribed feeds
@@ -52,6 +33,7 @@ $stmt = $pdo->prepare('
   FROM Feeds f
   JOIN UsersFeeds uf ON uf.feed_id = f.id
   WHERE uf.user_id = :user_id
+  ORDER BY uf.id DESC
 ');
 $stmt->execute(['user_id' => $_SESSION['id']]);
 $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -62,7 +44,7 @@ $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/w3.css"> 
+  <link rel="stylesheet" href="/static/w3.css"> 
   <title>Home - <?= $app; ?></title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
@@ -71,7 +53,7 @@ $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $('#feed').hide();
       $('#loading-indicator').show();
       $.ajax({
-        url: 'feed.php',
+        url: '/getFeed.php',
         method: 'GET',
         data: { url: url },
         success: function(response) {
@@ -105,7 +87,7 @@ $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
   <div class="w3-flex">
     <div class="w3-panel" style="width:320px;">
-      <form class="w3-flex" id="login-form" method="POST">
+      <form class="w3-flex" id="feed-form" method="POST">
           <input class="w3-input" type="text" id="url" name="url" placeholder="Enter feed URL..." required><br>
         <button class="w3-button w3-teal" type="submit">Add</button>
       </form>
