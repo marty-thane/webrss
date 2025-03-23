@@ -19,7 +19,7 @@
         <ol>
           <xsl:for-each select="link">
             <li>
-              <a href="{.}">
+              <a href="{.}" target="_blank">
                 <xsl:value-of select="." />
               </a>
             </li>
