@@ -46,26 +46,28 @@ $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/static/w3.css"> 
   <title>Home - <?= $app; ?></title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     function fetchFeed(url) {
-      $('#welcome').hide();
-      $('#feed').hide();
-      $('#loading-indicator').show();
-      $.ajax({
-        url: '/getFeed.php',
-        method: 'GET',
-        data: { url: url },
-        success: function(response) {
-          $('#loading-indicator').hide();
-          $('#feed').show();
-          $('#feed').html(response);
-        },
-        error: function() {
-          $('#loading-indicator').hide();
+      document.getElementById('welcome').style.display = 'none';
+      document.getElementById('feed').style.display = 'none';
+      document.getElementById('loading-indicator').style.display = 'block';
+
+      fetch('/getFeed.php?url=' + encodeURIComponent(url))
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Error fetching feed');
+          }
+          return response.text();
+        })
+        .then(function(data) {
+          document.getElementById('loading-indicator').style.display = 'none';
+          document.getElementById('feed').style.display = 'block';
+          document.getElementById('feed').innerHTML = data;
+        })
+        .catch(function() {
+          document.getElementById('loading-indicator').style.display = 'none';
           alert("Error fetching feed!");
-        }
-      });
+        });
     }
   </script>
   <style>
