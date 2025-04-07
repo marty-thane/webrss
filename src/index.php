@@ -48,9 +48,12 @@ $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <title>Home - <?= $app; ?></title>
   <script>
     function fetchFeed(url) {
-      document.getElementById('welcome').style.display = 'none';
-      document.getElementById('feed').style.display = 'none';
-      document.getElementById('loading-indicator').style.display = 'block';
+      const welcomeElement = document.getElementById('welcome');
+      const feedElement = document.getElementById('feed');
+      const loadingIndicator = document.getElementById('loading-indicator');
+      welcomeElement.style.display = 'none';
+      feedElement.style.display = 'none';
+      loadingIndicator.style.display = 'block';
 
       fetch('/getFeed.php?url=' + encodeURIComponent(url))
         .then(function(response) {
@@ -60,12 +63,12 @@ $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
           return response.text();
         })
         .then(function(data) {
-          document.getElementById('loading-indicator').style.display = 'none';
-          document.getElementById('feed').style.display = 'block';
-          document.getElementById('feed').innerHTML = data;
+          loadingIndicator.style.display = 'none';
+          feedElement.style.display = 'block';
+          feedElement.innerHTML = data;
         })
         .catch(function() {
-          document.getElementById('loading-indicator').style.display = 'none';
+          loadingIndicator.style.display = 'none';
           alert("Error fetching feed!");
         });
     }
