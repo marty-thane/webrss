@@ -93,7 +93,7 @@ $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <div class="w3-flex">
     <div class="w3-panel" style="width:320px;">
       <form class="w3-flex" id="feed-form" method="POST">
-          <input class="w3-input" type="text" id="url" name="url" placeholder="Enter feed URL..." required><br>
+        <input class="w3-input" type="text" id="url" name="url" placeholder="Enter feed URL..." required><br>
         <button class="w3-button w3-teal" type="submit">Add</button>
       </form>
       <ul class="w3-ul w3-hoverable">
@@ -101,6 +101,7 @@ $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <li onclick="fetchFeed('<?= $feed['url']; ?>')"><?= $feed['url']; ?></li>
         <?php endforeach; ?>
       </ul>
+      <a href="/logout.php" class="w3-button w3-text-red w3-right">Logout</a>
     </div>
 
     <div class="w3-container" style="width:850px;">
