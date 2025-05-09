@@ -13,9 +13,8 @@ try {
   die('Could not connect to the database: ' . $e->getMessage());
 }
 
-
 # Session management
 if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 ?>

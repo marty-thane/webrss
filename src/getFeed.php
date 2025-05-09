@@ -6,13 +6,13 @@ $url = $_GET['url'];
 $xml = new DOMDocument;
 
 if (!$xml->load($url)) {
-    echo "<script>alert('Error loading feed.');</script>";
-    exit;
+  echo "<script>alert('Error loading feed.');</script>";
+  exit;
 }
 
 if (!$xml->schemaValidate('static/rss.xsd')) {
-    echo "<script>alert('Feed validation failed.');</script>";
-    exit;
+  echo "<script>alert('Feed validation failed.');</script>";
+  exit;
 }
 
 $xsl = new DOMDocument;
